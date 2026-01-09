@@ -98,14 +98,14 @@ def findCoordsOnMiniMap(innerIcon):
         return None
 
     # DEBUG: 每 30 秒存一張 minimap 截圖
-    now = time.time()
-    if now - _LAST_MINIMAP_DUMP_TS >= MINIMAP_DUMP_INTERVAL_SECONDS:
-        os.makedirs(MINIMAP_DUMP_DIR, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = os.path.join(MINIMAP_DUMP_DIR, f"minimap_{ts}.png")
-        miniMapImage.save(path)
-        print(f"[DEBUG] saved minimap -> {path}")
-        _LAST_MINIMAP_DUMP_TS = now
+    # now = time.time()
+    # if now - _LAST_MINIMAP_DUMP_TS >= MINIMAP_DUMP_INTERVAL_SECONDS:
+    #     os.makedirs(MINIMAP_DUMP_DIR, exist_ok=True)
+    #     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    #     path = os.path.join(MINIMAP_DUMP_DIR, f"minimap_{ts}.png")
+    #     miniMapImage.save(path)
+    #     print(f"[DEBUG] saved minimap -> {path}")
+    #     _LAST_MINIMAP_DUMP_TS = now
 
     if miniMapImage.mode != innerIcon.mode:
         innerIcon = innerIcon.convert(miniMapImage.mode)
