@@ -8,6 +8,9 @@ import utils
 import numpy
 import requests
 import time
+_LAST_MINIMAP_SAVE_TS = 0
+
+
 
 BASE_DIR = Path(__file__).resolve().parent
 playerIcon = Image.open(BASE_DIR / 'pics' / 'playerIcon.png')
@@ -85,9 +88,19 @@ class GameMonitor:
         send_discord_notification(message)
 
 def findCoordsOnMiniMap(innerIcon):
+    global _LAST_MINIMAP_SAVE_TS
+
     miniMapImage = screenManager.getMiniMapScreenshot()
     if miniMapImage is None:
         return None
+
+    # DEBUG: 每 2 秒存一次
+    now = time.time()
+    if now - _LAST_MINIMAP_SAVE_TS > 30.0:
+        miniMapImage.save("minimap_debug.png")
+        print("Saved minimap_debug.png")
+        _LAST_MINIMAP_SAVE_TS = now
+
     if miniMapImage.mode != innerIcon.mode:
         innerIcon = innerIcon.convert(miniMapImage.mode)
     innerIconArr = numpy.asarray(innerIcon)
