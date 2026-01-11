@@ -47,9 +47,8 @@ def startBot():
 
     time.sleep(1)
     global summon, feed_pet_time
-    summon = time.time() - 71  # Force summon on first run
+    summon = time.time() - 81  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    # bottom_deck_3()  
     tt_1()
 
     while True:
@@ -283,7 +282,7 @@ def skills_10s():
 def skills_9s():
     global skill_9s
     current_time = time.time()
-    if current_time - skill_9s >= 9:
+    if current_time - skill_9s >= 5:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
         pydirectinput.press('2', 1, 0)
@@ -751,8 +750,8 @@ def tt_1():
     current_time = time.time()
     timeout = 30  
     start_time = time.time()
-    if current_time - summon >= 70:
-        summon = time.time()  # Reset timer immediately after triggering
+    if current_time - summon >= 80:
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
         pydirectinput.press('3', 1, 0)
         pydirectinput.press('up', 1, 0)
         goTo(32,82,1)
@@ -766,4 +765,3 @@ def tt_1():
         pydirectinput.keyDown('left')
         time.sleep(random.uniform(0.1, 0.11))
         pydirectinput.keyUp('left')
-        summon = time.time()
