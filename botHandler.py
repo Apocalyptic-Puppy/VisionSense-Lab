@@ -750,18 +750,16 @@ def tt_1():
     current_time = time.time()
     timeout = 30  
     start_time = time.time()
-    if current_time - summon >= 80:
+    if current_time - summon >= 75:
         summon = current_time  # Start the 80s countdown at the moment tt_1 begins
         pydirectinput.press('3', 1, 0)
-        pydirectinput.press('up', 1, 0)
         goTo(32,82,1)
         pydirectinput.press("w")
-        goTo(66,80,1)
+        goTo(79,80,1)
         pydirectinput.press("w")
-        goTo(95,80,1)
+        goTo(127,69,1)
         pydirectinput.press("w")
-        goTo(128,69,1)
-        goTo(152,80,1)
+        goTo(145,94,1)
         pydirectinput.keyDown('left')
         time.sleep(random.uniform(0.1, 0.11))
         pydirectinput.keyUp('left')
