@@ -50,7 +50,7 @@ def startBot():
     summon = time.time() - 71  # Force summon on first run
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
     # bottom_deck_3()  
-    calm_beach_2()
+    tt_1()
 
     while True:
         if not handler.botThread.isRunning():
@@ -63,7 +63,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        calm_beach_2()
+        tt_1()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -743,4 +743,26 @@ def calm_beach_2():
         pydirectinput.keyDown('right')
         time.sleep(random.uniform(0.1, 0.2))
         pydirectinput.keyUp('right')
+        summon = time.time()
+
+
+def tt_1():
+    global summon
+    current_time = time.time()
+    timeout = 30  
+    start_time = time.time()
+    if current_time - summon >= 70:
+        summon = time.time()  # Reset timer immediately after triggering
+        pydirectinput.press('3', 1, 0)
+        pydirectinput.press('up', 1, 0)
+        goTo(32,82,1)
+        pydirectinput.press("w")
+        goTo(73,80,1)
+        pydirectinput.press("w")
+        goTo(95,80,1)
+        pydirectinput.press("w")
+        goTo(154,80,1)
+        pydirectinput.keyDown('left')
+        time.sleep(random.uniform(0.1, 0.11))
+        pydirectinput.keyUp('left')
         summon = time.time()
