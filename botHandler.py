@@ -38,6 +38,7 @@ last_press_2 = time.time() - 1000
 last_press_3 = time.time() - 1000
 attack_thread_lock = threading.Lock()
 attack_thread_active = False
+pause_q_during_move = False  # Flag to pause q during skill execution in attack_while_moving
 LOOP_SLEEP_ACTIVE_MIN = 0.05  # min delay when bot is running
 LOOP_SLEEP_ACTIVE_MAX = 0.1   # max delay when bot is running
 LOOP_SLEEP_IDLE = 0.4         # delay when bot is paused
@@ -84,9 +85,9 @@ def attack():
 def attack_while_moving(min_interval=0):
     """
     Fire continuous q attacks during movement (e.g., double jump).
-    Q presses every 0.5 seconds; pauses to execute skills 1/2/3 when ready.
+    Q presses every 1.2 seconds; pauses immediately to execute skills 1/2/3 when ready.
     """
-    global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3
+    global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
     now = time.time()
     with attack_thread_lock:
         if attack_thread_active:
@@ -97,37 +98,47 @@ def attack_while_moving(min_interval=0):
         last_attack_while_moving = now
 
     def _attack_worker():
-        global attack_thread_active, last_press_1, last_press_2, last_press_3
+        global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
         try:
-            last_q_time = time.time()
-            # Run for ~2 seconds during the double jump window
+            last_q_time = time.time() - 1.2  # Allow immediate first q press
+            # Run for ~2.5 seconds during the double jump window
             worker_start = time.time()
             while time.time() - worker_start < 2.5:
                 now_local = time.time()
                 
-                # Check if any skill is ready and execute it
-                skill_executed = False
-                
+                # Check if any skill is ready and execute it (with priority)
                 # key 1: 9s cooldown
                 if now_local - last_press_1 >= 8.2:
+                    pause_q_during_move = True  # Pause q immediately
+                    time.sleep(0.05)  # Brief pause to ensure q stops
                     pydirectinput.press('1', 1, 0.05)
                     last_press_1 = now_local
-                    skill_executed = True
+                    pause_q_during_move = False
+                    last_q_time = time.time()  # Reset q timer after skill
+                    continue
                 
                 # key 2: 11s cooldown
                 if now_local - last_press_2 >= 9:
+                    pause_q_during_move = True
+                    time.sleep(0.05)
                     pydirectinput.press('2', 1, 0.05)
                     last_press_2 = now_local
-                    skill_executed = True
+                    pause_q_during_move = False
+                    last_q_time = time.time()
+                    continue
                 
                 # key 3: 24s cooldown
                 if now_local - last_press_3 >= 24:
+                    pause_q_during_move = True
+                    time.sleep(0.05)
                     pydirectinput.press('3', 1, 0.05)
                     last_press_3 = now_local
-                    skill_executed = True
+                    pause_q_during_move = False
+                    last_q_time = time.time()
+                    continue
                 
-                # Press q every 0.5 seconds (unless skill just executed)
-                if time.time() - last_q_time >= 0.5:
+                # Press q every 1.2 seconds (only if not paused)
+                if not pause_q_during_move and time.time() - last_q_time >= 1.2:
                     pydirectinput.press('q', 1, 0.05)
                     last_q_time = time.time()
                 
@@ -135,6 +146,7 @@ def attack_while_moving(min_interval=0):
         finally:
             with attack_thread_lock:
                 attack_thread_active = False
+            pause_q_during_move = False  # Ensure flag is reset
 
     threading.Thread(target=_attack_worker, daemon=True).start()
 
