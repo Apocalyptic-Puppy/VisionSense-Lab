@@ -47,9 +47,9 @@ def startBot():
 
     time.sleep(1)
     global summon, feed_pet_time
-    summon = time.time() - 81  # Force summon on first run (80s interval)
+    summon = time.time() - 61  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    tt_1()
+    lower_path()
 
     while True:
         if not handler.botThread.isRunning():
@@ -62,7 +62,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        tt_1()
+        lower_path()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -74,13 +74,11 @@ def attack():
     # feed_pet()
     # skills_120s()
     now = time.time()
-    if now - last_q_press >= 8:
-        pydirectinput.press('q', 1, 0)
-        last_q_press = now
+    pydirectinput.press('q', 1, 0)
 
 
 
-def attack_while_moving(min_interval=3):
+def attack_while_moving(min_interval=1):
     """
     Fire a short attack without flooding the system with threads.
     Only one worker runs at a time and honors a minimum interval.
@@ -274,7 +272,7 @@ def jumpDown():
 def skills_10s():
     global skill_10s
     current_time = time.time()
-    if current_time - skill_10s >= 10:
+    if current_time - skill_10s >= 9:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
         pydirectinput.press('1', 1, 0)
@@ -282,7 +280,7 @@ def skills_10s():
 def skills_9s():
     global skill_9s
     current_time = time.time()
-    if current_time - skill_9s >= 5:
+    if current_time - skill_9s >= 11:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
         pydirectinput.press('2', 1, 0)
@@ -293,12 +291,12 @@ def skills_15s():
     if current_time - skill_15s >= 15:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
-        pydirectinput.press('1', 1, 0)
+        pydirectinput.press('4', 1, 0)
         skill_15s = time.time()
 def skills_60s():
     global skill_60s
     current_time = time.time()
-    if current_time - skill_60s >= 60:
+    if current_time - skill_60s >= 28:
         sleep_duration = random.uniform(1.0, 1.5)
         time.sleep(sleep_duration)
         pydirectinput.press('3', 1, 0)
@@ -464,30 +462,22 @@ def bottom_deck_3():
 def lower_path():
     global summon
     current_time = time.time()
-    timeout = 30  # seconds
+    timeout = 30  
     start_time = time.time()
     if current_time - summon >= 60:
-        sleep_duration = random.uniform(0.4, 0.5)
-        goTo(94,39,1)
-        goTo(152,39,1)
-        goTo(187,39,1)
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
+        goTo(188,39,1)
         pydirectinput.press("w")
-        goTo(161,20,1)
-        goTo(152,20,1)
-        # timeout check
-        if time.time() - start_time > timeout:
-            print("Timeout! Moving to safe point")
-            goTo(152,20,1)
-        pydirectinput.keyDown('left')
+        goTo(118,39,1)
+        pydirectinput.keyDown('right')
         time.sleep(random.uniform(0.1, 0.2))
-        pydirectinput.keyUp('left')
-        summon = time.time()
+        pydirectinput.keyUp('right')
 
 def labyrinth_core_6():
     global summon
-    # Run continuously: every 60 seconds, restart the cycle from skills
+    # Run continuously: every 60 seconds, restart the cycle from skillsw
     current_time = time.time()
-    timeout = 30  # seconds
+    timeout = 30  # seconds1q
     start_time = time.time()
     
     # Execute skills and then loop for 60 seconds
@@ -763,3 +753,4 @@ def tt_1():
         pydirectinput.keyDown('left')
         time.sleep(random.uniform(0.1, 0.11))
         pydirectinput.keyUp('left')
+
