@@ -107,17 +107,17 @@ def attack_while_moving(min_interval=0):
             pydirectinput.press('q', 1, 1)
             now_local = time.time()
             # key 1: 9s cooldown
-            if now_local - last_press_1 >= 9:
+            if now_local - last_press_1 >= 8.5:
                 pydirectinput.press('1', 1, 1)
                 last_press_1 = now_local
             # key 2: 11s cooldown
             now_local = time.time()
-            if now_local - last_press_2 >= 11:
+            if now_local - last_press_2 >= 9:
                 pydirectinput.press('2', 1, 1)
                 last_press_2 = now_local
             # key 3: 24s cooldown
             now_local = time.time()
-            if now_local - last_press_3 >= 24:
+            if now_local - last_press_3 >= 25:
                 pydirectinput.press('3', 1, 1)
                 last_press_3 = now_local
         finally:
