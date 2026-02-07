@@ -78,7 +78,7 @@ def attack():
 
 
 
-def attack_while_moving(min_interval=1):
+def attack_while_moving(min_interval=0.2):
     """
     Fire a short attack without flooding the system with threads.
     Only one worker runs at a time and honors a minimum interval.
@@ -102,6 +102,9 @@ def attack_while_moving(min_interval=1):
             # time.sleep(sleep_duration)
             # pydirectinput.keyUp('q')
             pydirectinput.press('q', 1, 1)
+            pydirectinput.press('1', 1, 1)
+            pydirectinput.press('2', 1, 1)
+            pydirectinput.press('3', 1, 1)
         finally:
             with attack_thread_lock:
                 attack_thread_active = False
@@ -468,10 +471,10 @@ def lower_path():
         summon = current_time  # Start the 80s countdown at the moment tt_1 begins
         goTo(188,39,1)
         pydirectinput.press("w")
-        goTo(118,39,1)
-        pydirectinput.keyDown('right')
-        time.sleep(random.uniform(0.1, 0.2))
-        pydirectinput.keyUp('right')
+    else:
+        # Rest of the 60 seconds: keep moving between two points
+        goTo(201, 39, 1)
+        goTo(98, 39, 1)
 
 def labyrinth_core_6():
     global summon
