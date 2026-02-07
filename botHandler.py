@@ -78,7 +78,7 @@ def attack():
 
 
 
-def attack_while_moving(min_interval=0.2):
+def attack_while_moving(min_interval=0):
     """
     Fire a short attack without flooding the system with threads.
     Only one worker runs at a time and honors a minimum interval.
