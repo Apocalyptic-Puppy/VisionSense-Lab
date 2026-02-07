@@ -72,20 +72,28 @@ def startBot():
 
 def attack():
     global last_q_press
-    skills_9s()
-    skills_10s()
+    # Skip skill execution if attack_while_moving thread is active (to avoid conflicts)
+    if not attack_thread_active:
+        skills_9s()
+        skills_10s()
     # skills_60s()
     # feed_pet()
     # skills_120s()
     now = time.time()
-    pydirectinput.press('q', 1, 0)
+    # Skip q if in attack_while_moving thread
+    if not attack_thread_active:
+        pydirectinput.press('q', 1, 0)
 
 
 
 def attack_while_moving(min_interval=0):
     """
     Fire continuous q attacks during movement (e.g., double jump).
-    Q presses every 1.2 seconds; pauses immediately to execute skills 1/2/3 when ready.
+    Q: every 1.0-1.2 seconds (random interval)
+    Skill 1: every 8.2 seconds
+    Skill 2: every 9 seconds  
+    Skill 3: every 25 seconds
+    Pauses q when skills are ready to avoid input conflicts.
     """
     global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
     now = time.time()
@@ -100,53 +108,50 @@ def attack_while_moving(min_interval=0):
     def _attack_worker():
         global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
         try:
-            last_q_time = time.time() - 1.2  # Allow immediate first q press
-            # Run for ~2.5 seconds during the double jump window
             worker_start = time.time()
+            # Schedule next q press immediately, then every 1.0-1.2s
+            next_q_time = worker_start
+            
+            # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
                 now_local = time.time()
+                skill_executed = False
                 
-                # Check if any skill is ready and execute it (with priority)
-                # key 1: 9s cooldown
+                # Priority: Check and execute skills when ready
+                # Skill 1: 8.2s cooldown - highest priority
                 if now_local - last_press_1 >= 8.2:
-                    pause_q_during_move = True  # Pause q immediately
-                    time.sleep(0.05)  # Brief pause to ensure q stops
-                    pydirectinput.press('1', 1, 0.05)
+                    pydirectinput.press('1', 1, 0)
                     last_press_1 = now_local
-                    pause_q_during_move = False
-                    last_q_time = time.time()  # Reset q timer after skill
-                    continue
+                    # Reset q timer to avoid immediate conflict
+                    next_q_time = now_local + random.uniform(1.0, 1.2)
+                    skill_executed = True
                 
-                # key 2: 11s cooldown
-                if now_local - last_press_2 >= 9:
-                    pause_q_during_move = True
-                    time.sleep(0.05)
-                    pydirectinput.press('2', 1, 0.05)
+                # Skill 2: 9s cooldown - second priority
+                elif now_local - last_press_2 >= 9:
+                    pydirectinput.press('2', 1, 0)
                     last_press_2 = now_local
-                    pause_q_during_move = False
-                    last_q_time = time.time()
-                    continue
+                    next_q_time = now_local + random.uniform(1.0, 1.2)
+                    skill_executed = True
                 
-                # key 3: 24s cooldown
-                if now_local - last_press_3 >= 24:
-                    pause_q_during_move = True
-                    time.sleep(0.05)
-                    pydirectinput.press('3', 1, 0.05)
+                # Skill 3: 25s cooldown - third priority
+                elif now_local - last_press_3 >= 25:
+                    pydirectinput.press('3', 1, 0)
                     last_press_3 = now_local
-                    pause_q_during_move = False
-                    last_q_time = time.time()
-                    continue
+                    next_q_time = now_local + random.uniform(1.0, 1.2)
+                    skill_executed = True
                 
-                # Press q every 1.2 seconds (only if not paused)
-                if not pause_q_during_move and time.time() - last_q_time >= 1.2:
-                    pydirectinput.press('q', 1, 0.05)
-                    last_q_time = time.time()
+                # Only press q if no skill was just executed
+                if not skill_executed and now_local >= next_q_time:
+                    pydirectinput.press('q', 1, 0)
+                    # Schedule next q with random interval 1.0-1.2s
+                    next_q_time = now_local + random.uniform(1.0, 1.2)
                 
                 time.sleep(0.05)  # Small sleep to avoid busy loop
+                
         finally:
             with attack_thread_lock:
                 attack_thread_active = False
-            pause_q_during_move = False  # Ensure flag is reset
+            pause_q_during_move = False
 
     threading.Thread(target=_attack_worker, daemon=True).start()
 
