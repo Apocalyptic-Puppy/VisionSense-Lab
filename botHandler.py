@@ -83,10 +83,10 @@ def attack():
 
 def attack_while_moving(min_interval=0):
     """
-    Fire a short attack without flooding the system with threads.
-    Only one worker runs at a time and honors a minimum interval.
+    Fire continuous q attacks during movement (e.g., double jump).
+    Q presses every 0.5 seconds; pauses to execute skills 1/2/3 when ready.
     """
-    global last_attack_while_moving, attack_thread_active
+    global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3
     now = time.time()
     with attack_thread_lock:
         if attack_thread_active:
@@ -99,27 +99,39 @@ def attack_while_moving(min_interval=0):
     def _attack_worker():
         global attack_thread_active, last_press_1, last_press_2, last_press_3
         try:
-            # # Ren
-            # pydirectinput.keyDown('q')
-            # sleep_duration = random.uniform(0.9, 1)
-            # time.sleep(sleep_duration)
-            # pydirectinput.keyUp('q')
-            pydirectinput.press('q', 1, 1)
-            now_local = time.time()
-            # key 1: 9s cooldown
-            if now_local - last_press_1 >= 8.5:
-                pydirectinput.press('1', 1, 1)
-                last_press_1 = now_local
-            # key 2: 11s cooldown
-            now_local = time.time()
-            if now_local - last_press_2 >= 9:
-                pydirectinput.press('2', 1, 1)
-                last_press_2 = now_local
-            # key 3: 24s cooldown
-            now_local = time.time()
-            if now_local - last_press_3 >= 25:
-                pydirectinput.press('3', 1, 1)
-                last_press_3 = now_local
+            last_q_time = time.time()
+            # Run for ~2 seconds during the double jump window
+            worker_start = time.time()
+            while time.time() - worker_start < 2.5:
+                now_local = time.time()
+                
+                # Check if any skill is ready and execute it
+                skill_executed = False
+                
+                # key 1: 9s cooldown
+                if now_local - last_press_1 >= 8.2:
+                    pydirectinput.press('1', 1, 0.05)
+                    last_press_1 = now_local
+                    skill_executed = True
+                
+                # key 2: 11s cooldown
+                if now_local - last_press_2 >= 9:
+                    pydirectinput.press('2', 1, 0.05)
+                    last_press_2 = now_local
+                    skill_executed = True
+                
+                # key 3: 24s cooldown
+                if now_local - last_press_3 >= 24:
+                    pydirectinput.press('3', 1, 0.05)
+                    last_press_3 = now_local
+                    skill_executed = True
+                
+                # Press q every 0.5 seconds (unless skill just executed)
+                if time.time() - last_q_time >= 0.5:
+                    pydirectinput.press('q', 1, 0.05)
+                    last_q_time = time.time()
+                
+                time.sleep(0.05)  # Small sleep to avoid busy loop
         finally:
             with attack_thread_lock:
                 attack_thread_active = False
