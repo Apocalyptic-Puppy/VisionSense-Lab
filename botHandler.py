@@ -33,6 +33,9 @@ feed_pet_time=time.time()
 summon=time.time()
 last_q_press=time.time()
 last_attack_while_moving = 0.0
+last_press_1 = time.time() - 1000
+last_press_2 = time.time() - 1000
+last_press_3 = time.time() - 1000
 attack_thread_lock = threading.Lock()
 attack_thread_active = False
 LOOP_SLEEP_ACTIVE_MIN = 0.05  # min delay when bot is running
@@ -94,7 +97,7 @@ def attack_while_moving(min_interval=0):
         last_attack_while_moving = now
 
     def _attack_worker():
-        global attack_thread_active
+        global attack_thread_active, last_press_1, last_press_2, last_press_3
         try:
             # # Ren
             # pydirectinput.keyDown('q')
@@ -102,9 +105,21 @@ def attack_while_moving(min_interval=0):
             # time.sleep(sleep_duration)
             # pydirectinput.keyUp('q')
             pydirectinput.press('q', 1, 1)
-            pydirectinput.press('1', 1, 1)
-            pydirectinput.press('2', 1, 1)
-            pydirectinput.press('3', 1, 1)
+            now_local = time.time()
+            # key 1: 9s cooldown
+            if now_local - last_press_1 >= 9:
+                pydirectinput.press('1', 1, 1)
+                last_press_1 = now_local
+            # key 2: 11s cooldown
+            now_local = time.time()
+            if now_local - last_press_2 >= 11:
+                pydirectinput.press('2', 1, 1)
+                last_press_2 = now_local
+            # key 3: 24s cooldown
+            now_local = time.time()
+            if now_local - last_press_3 >= 24:
+                pydirectinput.press('3', 1, 1)
+                last_press_3 = now_local
         finally:
             with attack_thread_lock:
                 attack_thread_active = False
@@ -280,6 +295,11 @@ def skills_10s():
         time.sleep(sleep_duration)
         pydirectinput.press('1', 1, 0)
         skill_10s = time.time()
+        try:
+            global last_press_1
+            last_press_1 = time.time()
+        except NameError:
+            pass
 def skills_9s():
     global skill_9s
     current_time = time.time()
@@ -288,6 +308,11 @@ def skills_9s():
         time.sleep(sleep_duration)
         pydirectinput.press('2', 1, 0)
         skill_9s = time.time()
+        try:
+            global last_press_2
+            last_press_2 = time.time()
+        except NameError:
+            pass
 def skills_15s():
     global skill_15s
     current_time = time.time()
@@ -299,11 +324,17 @@ def skills_15s():
 def skills_60s():
     global skill_60s
     current_time = time.time()
-    if current_time - skill_60s >= 28:
+    # repurposed to 24s cooldown for key '3'
+    if current_time - skill_60s >= 24:
         sleep_duration = random.uniform(1.0, 1.5)
         time.sleep(sleep_duration)
         pydirectinput.press('3', 1, 0)
         skill_60s = time.time()
+        try:
+            global last_press_3
+            last_press_3 = time.time()
+        except NameError:
+            pass
 def skills_120s():
      global skill_120s
      current_time = time.time()
