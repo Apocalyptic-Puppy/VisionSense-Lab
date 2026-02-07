@@ -49,7 +49,7 @@ def startBot():
     global summon, feed_pet_time
     summon = time.time() - 61  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    lower_path()
+    toxic_forest_1()
 
     while True:
         if not handler.botThread.isRunning():
@@ -62,7 +62,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        lower_path()
+        toxic_forest_1()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -475,6 +475,21 @@ def lower_path():
         # Rest of the 60 seconds: keep moving between two points
         goTo(201, 39, 1)
         goTo(98, 39, 1)
+
+
+def toxic_forest_1():
+    global summon
+    current_time = time.time()
+    timeout = 30  
+    start_time = time.time()
+    if current_time - summon >= 60:
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
+        goTo(194,13,1)
+        pydirectinput.press("w")
+    else:
+        # Rest of the 60 seconds: keep moving between two points
+        goTo(194, 47, 1)
+        goTo(51, 47, 1)
 
 def labyrinth_core_6():
     global summon
