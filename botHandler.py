@@ -39,6 +39,7 @@ last_press_3 = time.time() - 1000
 attack_thread_lock = threading.Lock()
 attack_thread_active = False
 pause_q_during_move = False  # Flag to pause q during skill execution in attack_while_moving
+initial_skill_sync_done = False
 LOOP_SLEEP_ACTIVE_MIN = 0.05  # min delay when bot is running
 LOOP_SLEEP_ACTIVE_MAX = 0.1   # max delay when bot is running
 LOOP_SLEEP_IDLE = 0.4         # delay when bot is paused
@@ -95,7 +96,7 @@ def attack_while_moving(min_interval=0):
     Skill 3: every 25 seconds
     Pauses q when skills are ready to avoid input conflicts.
     """
-    global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
+    global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move, initial_skill_sync_done
     now = time.time()
     with attack_thread_lock:
         if attack_thread_active:
@@ -106,11 +107,30 @@ def attack_while_moving(min_interval=0):
         last_attack_while_moving = now
 
     def _attack_worker():
-        global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
+        global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move, initial_skill_sync_done
         try:
             worker_start = time.time()
             # Schedule next q press immediately, then every 1.0-1.2s
             next_q_time = worker_start
+
+            # Initial sync: press 1/2/3 once so their cooldowns start together (only if ready)
+            if not initial_skill_sync_done:
+                now_local = time.time()
+                if (now_local - last_press_1 >= 8.2 and
+                        now_local - last_press_2 >= 9 and
+                        now_local - last_press_3 >= 25):
+                    pydirectinput.press('1', 1, 0)
+                    time.sleep(0.05)
+                    pydirectinput.press('2', 1, 0)
+                    time.sleep(0.05)
+                    pydirectinput.press('3', 1, 0)
+                    sync_time = time.time()
+                    last_press_1 = sync_time
+                    last_press_2 = sync_time
+                    last_press_3 = sync_time
+                    initial_skill_sync_done = True
+                    # Avoid q right after the sync presses
+                    next_q_time = sync_time + random.uniform(1.0, 1.2)
             
             # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
