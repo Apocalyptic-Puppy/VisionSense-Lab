@@ -90,8 +90,6 @@ def attack():
         if initial_skill_sync_time and time.time() - initial_skill_sync_time < 0.3:
             return
         pydirectinput.press('q', 1, 0)
-
-
 def ensure_initial_skill_sync():
     global initial_skill_sync_done, initial_skill_sync_time
     global last_press_1, last_press_2, last_press_3, skill_10s, skill_9s, skill_60s
@@ -122,11 +120,7 @@ def ensure_initial_skill_sync():
 def attack_while_moving(min_interval=0):
     """
     Fire continuous q attacks during movement (e.g., double jump).
-    Q: every 1.0-1.2 seconds (random interval)
-    Skill 1: every 8.2 seconds
-    Skill 2: every 9 seconds  
-    Skill 3: every 25 seconds
-    Pauses q when skills are ready to avoid input conflicts.
+    Every second during movement: press q, 1, 2, 3 once each.
     """
     global last_attack_while_moving, attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move, initial_skill_sync_done
     now = time.time()
@@ -142,49 +136,31 @@ def attack_while_moving(min_interval=0):
         global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move, initial_skill_sync_done
         try:
             worker_start = time.time()
-            # Schedule next q press immediately, then every 1.0-1.2s
-            next_q_time = worker_start
+            next_spam_time = worker_start
             
             # Initial sync: press 1/2/3 once so their cooldowns start together
             if ensure_initial_skill_sync():
-                # Avoid q right after the sync presses
-                next_q_time = time.time() + random.uniform(1.0, 1.2)
+                # Avoid immediate overlap with the sync presses
+                next_spam_time = time.time() + 1.0
             
             # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
                 now_local = time.time()
-                skill_executed = False
-                
-                # Priority: Check and execute skills when ready
-                # Skill 1: 8.2s cooldown - highest priority
-                if now_local - last_press_1 >= 8.2:
-                    pydirectinput.press('1', 1, 0)
-                    last_press_1 = now_local
-                    # Reset q timer to avoid immediate conflict
-                    next_q_time = now_local + random.uniform(1.0, 1.2)
-                    skill_executed = True
-                
-                # Skill 2: 9s cooldown - second priority
-                elif now_local - last_press_2 >= 9:
-                    pydirectinput.press('2', 1, 0)
-                    last_press_2 = now_local
-                    next_q_time = now_local + random.uniform(1.0, 1.2)
-                    skill_executed = True
-                
-                # Skill 3: 25s cooldown - third priority
-                elif now_local - last_press_3 >= 25:
-                    pydirectinput.press('3', 1, 0)
-                    last_press_3 = now_local
-                    next_q_time = now_local + random.uniform(1.0, 1.2)
-                    skill_executed = True
-                
-                # Only press q if no skill was just executed
-                if not skill_executed and now_local >= next_q_time:
+                if now_local >= next_spam_time:
                     pydirectinput.press('q', 1, 0)
-                    # Schedule next q with random interval 1.0-1.2s
-                    next_q_time = now_local + random.uniform(1.0, 1.2)
+                    time.sleep(0.04)
+                    pydirectinput.press('1', 1, 0)
+                    time.sleep(0.04)
+                    pydirectinput.press('2', 1, 0)
+                    time.sleep(0.04)
+                    pydirectinput.press('3', 1, 0)
+                    stamp = time.time()
+                    last_press_1 = stamp
+                    last_press_2 = stamp
+                    last_press_3 = stamp
+                    next_spam_time = now_local + 1.0
                 
-                time.sleep(0.05)  # Small sleep to avoid busy loop
+                time.sleep(0.02)  # Small sleep to avoid busy loop
                 
         finally:
             with attack_thread_lock:
