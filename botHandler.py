@@ -40,6 +40,8 @@ attack_thread_lock = threading.Lock()
 attack_thread_active = False
 pause_q_during_move = False  # Flag to pause q during skill execution in attack_while_moving
 initial_skill_sync_done = False
+initial_skill_sync_time = 0.0
+initial_skill_sync_lock = threading.Lock()
 LOOP_SLEEP_ACTIVE_MIN = 0.05  # min delay when bot is running
 LOOP_SLEEP_ACTIVE_MAX = 0.1   # max delay when bot is running
 LOOP_SLEEP_IDLE = 0.4         # delay when bot is paused
@@ -75,6 +77,7 @@ def attack():
     global last_q_press
     # Skip skill execution if attack_while_moving thread is active (to avoid conflicts)
     if not attack_thread_active:
+        ensure_initial_skill_sync()
         skills_9s()
         skills_10s()
     # skills_60s()
@@ -83,8 +86,37 @@ def attack():
     now = time.time()
     # Skip q if in attack_while_moving thread
     if not attack_thread_active:
+        # Avoid q immediately after initial 1/2/3 sync to reduce input conflicts
+        if initial_skill_sync_time and time.time() - initial_skill_sync_time < 0.3:
+            return
         pydirectinput.press('q', 1, 0)
 
+
+def ensure_initial_skill_sync():
+    global initial_skill_sync_done, initial_skill_sync_time
+    global last_press_1, last_press_2, last_press_3, skill_10s, skill_9s, skill_60s
+    if initial_skill_sync_done:
+        return False
+    with initial_skill_sync_lock:
+        if initial_skill_sync_done:
+            return False
+        # Press 1/2/3 once to align cooldowns at start
+        pydirectinput.press('1', 1, 0)
+        time.sleep(0.06)
+        pydirectinput.press('2', 1, 0)
+        time.sleep(0.06)
+        pydirectinput.press('3', 1, 0)
+        sync_time = time.time()
+        last_press_1 = sync_time
+        last_press_2 = sync_time
+        last_press_3 = sync_time
+        # Align other skill timers that also use 1/2/3
+        skill_10s = sync_time
+        skill_9s = sync_time
+        skill_60s = sync_time
+        initial_skill_sync_time = sync_time
+        initial_skill_sync_done = True
+        return True
 
 
 def attack_while_moving(min_interval=0):
@@ -112,25 +144,11 @@ def attack_while_moving(min_interval=0):
             worker_start = time.time()
             # Schedule next q press immediately, then every 1.0-1.2s
             next_q_time = worker_start
-
-            # Initial sync: press 1/2/3 once so their cooldowns start together (only if ready)
-            if not initial_skill_sync_done:
-                now_local = time.time()
-                if (now_local - last_press_1 >= 8.2 and
-                        now_local - last_press_2 >= 9 and
-                        now_local - last_press_3 >= 25):
-                    pydirectinput.press('1', 1, 0)
-                    time.sleep(0.05)
-                    pydirectinput.press('2', 1, 0)
-                    time.sleep(0.05)
-                    pydirectinput.press('3', 1, 0)
-                    sync_time = time.time()
-                    last_press_1 = sync_time
-                    last_press_2 = sync_time
-                    last_press_3 = sync_time
-                    initial_skill_sync_done = True
-                    # Avoid q right after the sync presses
-                    next_q_time = sync_time + random.uniform(1.0, 1.2)
+            
+            # Initial sync: press 1/2/3 once so their cooldowns start together
+            if ensure_initial_skill_sync():
+                # Avoid q right after the sync presses
+                next_q_time = time.time() + random.uniform(1.0, 1.2)
             
             # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
