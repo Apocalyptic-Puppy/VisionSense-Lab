@@ -105,23 +105,20 @@ def attack_while_moving(min_interval=0):
         try:
             worker_start = time.time()
             next_spam_time = worker_start
+            seq_delay = 0.1  # slightly longer delay so the game reliably registers each key
             
             # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
                 now_local = time.time()
                 if now_local >= next_spam_time:
                     pydirectinput.press('q', 1, 0)
-                    time.sleep(0.04)
+                    time.sleep(seq_delay)
                     pydirectinput.press('1', 1, 0)
-                    time.sleep(0.04)
+                    time.sleep(seq_delay)
                     pydirectinput.press('2', 1, 0)
-                    time.sleep(0.04)
+                    time.sleep(seq_delay)
                     pydirectinput.press('3', 1, 0)
-                    stamp = time.time()
-                    last_press_1 = stamp
-                    last_press_2 = stamp
-                    last_press_3 = stamp
-                    next_spam_time = now_local + 1.0
+                    next_spam_time = time.time() + 1.0
                 
                 time.sleep(0.02)  # Small sleep to avoid busy loop
                 
