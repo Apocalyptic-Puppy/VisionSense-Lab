@@ -53,7 +53,7 @@ def startBot():
     global summon, feed_pet_time
     summon = time.time() - 61  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    toxic_forest_1()
+    star_swallowing_sea_1()
 
     while True:
         if not handler.botThread.isRunning():
@@ -66,7 +66,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        toxic_forest_1()
+        star_swallowing_sea_1()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -104,21 +104,28 @@ def attack_while_moving(min_interval=0):
         global attack_thread_active, last_press_1, last_press_2, last_press_3, pause_q_during_move
         try:
             worker_start = time.time()
-            next_spam_time = worker_start
-            seq_delay = 0.1  # slightly longer delay so the game reliably registers each key
+            next_q_time = worker_start
+            next_123_time = worker_start
+            seq_delay = 0.5  # per your request: 0.5s delay between inputs
             
             # Run for ~2.5 seconds during the double jump window
             while time.time() - worker_start < 2.5:
                 now_local = time.time()
-                if now_local >= next_spam_time:
+                if now_local >= next_q_time:
                     pydirectinput.press('q', 1, 0)
-                    time.sleep(seq_delay)
+                    next_q_time = time.time() + 1.0
+
+                if now_local >= next_123_time:
                     pydirectinput.press('1', 1, 0)
                     time.sleep(seq_delay)
                     pydirectinput.press('2', 1, 0)
                     time.sleep(seq_delay)
                     pydirectinput.press('3', 1, 0)
-                    next_spam_time = time.time() + 1.0
+                    stamp = time.time()
+                    last_press_1 = stamp
+                    last_press_2 = stamp
+                    last_press_3 = stamp
+                    next_123_time = time.time() + 1.0
                 
                 time.sleep(0.02)  # Small sleep to avoid busy loop
                 
@@ -510,6 +517,19 @@ def lower_path():
         goTo(201, 39, 1)
         goTo(98, 39, 1)
 
+def star_swallowing_sea_1():
+    global summon
+    current_time = time.time()
+    timeout = 30  
+    start_time = time.time()
+    if current_time - summon >= 60:
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
+        goTo(72,20,1)
+        pydirectinput.press("w")
+    else:
+        # Rest of the 60 seconds: keep moving between two points
+        goTo(53, 52, 1)
+        goTo(121, 52, 1)
 
 def toxic_forest_1():
     global summon
