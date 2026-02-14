@@ -113,7 +113,7 @@ def attack_while_moving(min_interval=0):
                 now_local = time.time()
                 if now_local >= next_q_time:
                     pydirectinput.press('q', 1, 0)
-                    next_q_time = time.time() + 0.5
+                    next_q_time = time.time() + 1.0
 
                 if now_local >= next_123_time:
                     pydirectinput.press('1', 1, 0)
