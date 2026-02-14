@@ -118,8 +118,8 @@ def attack_while_moving(min_interval=0):
                 if now_local >= next_123_time:
                     pydirectinput.press('1', 1, 0)
                     time.sleep(seq_delay)
-                    # pydirectinput.press('2', 1, 0)
-                    # time.sleep(seq_delay)
+                    pydirectinput.press('2', 1, 0)
+                    time.sleep(seq_delay)
                     # pydirectinput.press('3', 1, 0)
                     stamp = time.time()
                     last_press_1 = stamp
@@ -191,7 +191,7 @@ def goToDirection(direction, distance):
         # pydirectinput.press(JUMP_KEY, 1, 0.05)
         pydirectinput.press(JUMP_KEY, 1, 0)
         time.sleep(0.2)
-        pydirectinput.press(JUMP_KEY, 1, 0)
+        pydirectinput.press('v', 1, 0)
         threading.Thread(target=attack_while_moving, daemon=True).start()
         # pydirectinput.press(TP_KEY) - Use me if you are using teleport (Kanna, Mage...)
         pydirectinput.keyUp(direction.lower())
