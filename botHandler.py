@@ -53,7 +53,7 @@ def startBot():
     global summon, feed_pet_time
     summon = time.time() - 61  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    star_swallowing_sea_1()
+    labyrinth_core_6()
 
     while True:
         if not handler.botThread.isRunning():
@@ -66,7 +66,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        star_swallowing_sea_1()
+        labyrinth_core_6()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -560,20 +560,10 @@ def labyrinth_core_6():
     if time.time() - summon < 5:  # First 5 seconds after trigger: execute skills
         goTo(138, 39, 1)
         pydirectinput.press("w")
-        goTo(114, 39, 1)
-        pydirectinput.keyDown('left')
-        time.sleep(random.uniform(0.1, 0.2))
-        pydirectinput.keyUp('left')
         pydirectinput.press("e")
-        goTo(145, 58, 1)
-        goTo(120, 58, 1)
-        goTo(74, 58, 1)
     else:
-        # Rest of the 60 seconds: keep moving between two points
-        goTo(47, 76, 1)
-        time.sleep(random.uniform(0.2, 0.3))
         goTo(153, 76, 1)
-        time.sleep(random.uniform(0.2, 0.3))
+        goTo(47, 76, 1)
 
 def library_6():
     global summon
