@@ -74,7 +74,7 @@ def attack():
     global last_q_press
     # Skip skill execution if attack_while_moving thread is active (to avoid conflicts)
     if not attack_thread_active:
-        skills_9s()
+    # skills_9s()
         skills_10s()
     # skills_60s()
     # feed_pet()
@@ -113,18 +113,18 @@ def attack_while_moving(min_interval=0):
                 now_local = time.time()
                 if now_local >= next_q_time:
                     pydirectinput.press('q', 1, 0)
-                    next_q_time = time.time() + 1.0
+                    next_q_time = time.time() + 0.5
 
                 if now_local >= next_123_time:
                     pydirectinput.press('1', 1, 0)
                     time.sleep(seq_delay)
-                    pydirectinput.press('2', 1, 0)
-                    time.sleep(seq_delay)
-                    pydirectinput.press('3', 1, 0)
+                    # pydirectinput.press('2', 1, 0)
+                    # time.sleep(seq_delay)
+                    # pydirectinput.press('3', 1, 0)
                     stamp = time.time()
                     last_press_1 = stamp
-                    last_press_2 = stamp
-                    last_press_3 = stamp
+                    # last_press_2 = stamp
+                    # last_press_3 = stamp
                     next_123_time = time.time() + 1.0
                 
                 time.sleep(0.02)  # Small sleep to avoid busy loop
@@ -563,7 +563,7 @@ def labyrinth_core_6():
         pydirectinput.press("e")
     else:
         goTo(153, 76, 1)
-        goTo(47, 76, 1)
+        goTo(80, 76, 1)
 
 def library_6():
     global summon
