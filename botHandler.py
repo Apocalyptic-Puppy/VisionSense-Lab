@@ -563,7 +563,7 @@ def labyrinth_core_6():
         pydirectinput.press("e")
     else:
         goTo(153, 76, 1)
-        goTo(80, 76, 1)
+        goTo(52, 76, 1)
 
 def library_6():
     global summon
