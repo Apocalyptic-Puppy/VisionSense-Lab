@@ -83,6 +83,8 @@ def attack():
     # Skip q if in attack_while_moving thread
     if not attack_thread_active:
         pydirectinput.press('q', 1, 0)
+    sleep_duration = random.uniform(0.5, 0.6)
+    time.sleep(sleep_duration)
 
 
 def attack_while_moving(min_interval=0):
