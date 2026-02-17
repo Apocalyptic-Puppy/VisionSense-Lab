@@ -53,7 +53,7 @@ def startBot():
     global summon, feed_pet_time
     summon = time.time() - 61  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    labyrinth_core_6()
+    limina_1_4()
 
     while True:
         if not handler.botThread.isRunning():
@@ -66,7 +66,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        labyrinth_core_6()
+        limina_1_4()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -74,7 +74,7 @@ def attack():
     global last_q_press
     # Skip skill execution if attack_while_moving thread is active (to avoid conflicts)
     if not attack_thread_active:
-    # skills_9s()
+        skills_9s()
         skills_10s()
     # skills_60s()
     # feed_pet()
@@ -300,7 +300,7 @@ def jumpDown():
 def skills_10s():
     global skill_10s
     current_time = time.time()
-    if current_time - skill_10s >= 9:
+    if current_time - skill_10s >= 8:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
         pydirectinput.press('1', 1, 0)
@@ -313,7 +313,7 @@ def skills_10s():
 def skills_9s():
     global skill_9s
     current_time = time.time()
-    if current_time - skill_9s >= 11:
+    if current_time - skill_9s >= 9:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
         pydirectinput.press('2', 1, 0)
@@ -564,6 +564,20 @@ def labyrinth_core_6():
     else:
         goTo(153, 76, 1)
         goTo(52, 76, 1)
+
+def limina_1_4():
+    global summon
+    current_time = time.time()
+    timeout = 30  
+    start_time = time.time()
+    if current_time - summon >= 75:
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
+        goTo(137,56,1)
+        pydirectinput.press("w")
+        goTo(77,74,1)
+        pydirectinput.keyDown('left')
+        time.sleep(random.uniform(0.1, 0.11))
+        pydirectinput.keyUp('left')
 
 def library_6():
     global summon
