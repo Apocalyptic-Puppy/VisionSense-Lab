@@ -570,9 +570,9 @@ def limina_1_4():
     current_time = time.time()
     timeout = 30  
     start_time = time.time()
-    if current_time - summon >= 75:
+    if current_time - summon >= 60:
         summon = current_time  # Start the 80s countdown at the moment tt_1 begins
-        goTo(137,56,1)
+        goTo(134,58,1)
         pydirectinput.press("w")
         goTo(77,74,1)
         pydirectinput.keyDown('left')
