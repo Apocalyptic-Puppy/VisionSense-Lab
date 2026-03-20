@@ -210,7 +210,7 @@ def goUp(targetY):
         # and abs(distance) < 20:
             pydirectinput.keyDown('up')
             pydirectinput.press(JUMP_KEY) # Adele upjump
-            time.sleep(0.3)
+            time.sleep(0.1)
             pydirectinput.press(JUMP_KEY) # Adele upjump
             pydirectinput.keyUp('up')
         # if abs(distance) >= 5:
