@@ -213,7 +213,6 @@ def goUp(targetY):
             # time.sleep(0.1)
             # pydirectinput.press(JUMP_KEY) # Adele upjump
             # pydirectinput.keyUp('up')
-        if abs(distance) >= 5:
             pydirectinput.press('x') #rope lift
             time.sleep(1.0)
         else:
