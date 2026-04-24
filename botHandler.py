@@ -49,7 +49,7 @@ def startBot():
     global summon, feed_pet_time
     summon = time.time() - 81  # Force summon on first run (80s interval)
     # feed_pet_time = time.time() - 601  # Force feed_pet on first run (10 minutes in past)
-    tt_1()
+    ffp_1()
 
     while True:
         if not handler.botThread.isRunning():
@@ -62,7 +62,7 @@ def startBot():
 
         # Don't touch
         currentTime = time.time()
-        tt_1()
+        ffp_1()
         attack()
         time.sleep(random.uniform(LOOP_SLEEP_ACTIVE_MIN, LOOP_SLEEP_ACTIVE_MAX))
 
@@ -760,6 +760,26 @@ def tt_1():
         goTo(127,69,1)
         pydirectinput.press("w")
         goTo(145,94,1)
+        pydirectinput.keyDown('left')
+        time.sleep(random.uniform(0.1, 0.11))
+        pydirectinput.keyUp('left')
+
+
+def ffp_1():
+    global summon
+    current_time = time.time()
+    timeout = 30  
+    start_time = time.time()
+    if current_time - summon >= 75:
+        summon = current_time  # Start the 80s countdown at the moment tt_1 begins
+        pydirectinput.press('3', 1, 0)
+        goTo(49,51,1)
+        pydirectinput.press("w")
+        goTo(94,51,1)
+        pydirectinput.press("w")
+        goTo(123,51,1)
+        pydirectinput.press("w")
+        goTo(174,64,1)
         pydirectinput.keyDown('left')
         time.sleep(random.uniform(0.1, 0.11))
         pydirectinput.keyUp('left')
