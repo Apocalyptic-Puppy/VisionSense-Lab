@@ -22,10 +22,32 @@ runeIcon = Image.open(BASE_DIR / 'pics' / 'runeIcon.png')
 ICON_CHECK_INTERVAL_SECONDS = 1.0
 DOOR_NOTIFY_COOLDOWN_SECONDS = 90
 RUNE_NOTIFY_COOLDOWN_SECONDS = 90
-DISCORD_WEBHOOK_URL = os.environ.get(
-    "DISCORD_WEBHOOK_URL",
-    "https://canary.discord.com/api/webhooks/1451374880582008883/01h659Z2IyemSoRuMTXl0ZWD5bg7NE9vYZUZ2tiwJX8I8naz2IPHDM_KmlT5a9aTa3Ad",
-)
+# Load Discord webhook URL from environment or local config (config.json or .env). Do NOT commit config.json/.env.
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+if not DISCORD_WEBHOOK_URL:
+    # Try config.json in BASE_DIR
+    try:
+        import json
+        cfg_path = BASE_DIR / "config.json"
+        if cfg_path.exists():
+            with open(cfg_path, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+            DISCORD_WEBHOOK_URL = cfg.get("discord_webhook_url")
+    except Exception:
+        pass
+if not DISCORD_WEBHOOK_URL:
+    # Try .env file with DISCORD_WEBHOOK_URL=...
+    try:
+        env_path = BASE_DIR / ".env"
+        if env_path.exists():
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("DISCORD_WEBHOOK_URL="):
+                        DISCORD_WEBHOOK_URL = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        break
+    except Exception:
+        pass
 
 class GameMonitor:
     def __init__(self, currentHp=None, currentPlayerCoords=None):

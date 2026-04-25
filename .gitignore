@@ -9,3 +9,7 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Local config (do not commit)
+config.json
+.env
