@@ -1,0 +1,7 @@
+commit 462cfc2f4d934b1b051d749212fead328789fa1c
+Author:     Apocalyptic-Puppy <rayray21211@gmail.com>
+AuthorDate: Sun Apr 26 01:50:54 2026 +0800
+Commit:     Apocalyptic-Puppy <rayray21211@gmail.com>
+CommitDate: Sun Apr 26 01:53:32 2026 +0800
+
+    Load Discord webhook from env/config; add config.json and .env to .gitignore\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
