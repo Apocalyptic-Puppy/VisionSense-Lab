@@ -70,6 +70,7 @@ def attack():
     global last_q_press
     skills_9s()
     skills_10s()
+    skills_15s()
     # skills_60s()
     # feed_pet()
     # skills_120s()
@@ -290,10 +291,10 @@ def skills_9s():
 def skills_15s():
     global skill_15s
     current_time = time.time()
-    if current_time - skill_15s >= 15:
+    if current_time - skill_15s >= 10:
         sleep_duration = random.uniform(0.29, 0.39)
         time.sleep(sleep_duration)
-        pydirectinput.press('1', 1, 0)
+        pydirectinput.press('5', 1, 0)
         skill_15s = time.time()
 def skills_60s():
     global skill_60s
@@ -301,7 +302,9 @@ def skills_60s():
     if current_time - skill_60s >= 60:
         sleep_duration = random.uniform(1.0, 1.5)
         time.sleep(sleep_duration)
-        pydirectinput.press('3', 1, 0)
+        pydirectinput.press('t', 1, 0)
+        time.sleep(sleep_duration)
+        pydirectinput.press('y', 1, 0)
         skill_60s = time.time()
 def skills_120s():
      global skill_120s
